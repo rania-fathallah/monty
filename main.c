@@ -6,47 +6,41 @@ bus_t bus = {NULL, NULL, NULL, 0};
 * @argv: monty file location
 * Return: 0 on success
 */
-int main(int argc, char *argv[]) {
-    stack_t *stack = NULL;
-    FILE *file;
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t read;
-    int line_number = 1;
+int main(int argc, char *argv[])
+{
+	char *content;
+	FILE *file;
+	size_t size = 0;
+	ssize_t read_line = 1;
+	stack_t *stack = NULL;
+	unsigned int counter = 0;
 
-    if (argc != 2) {
-        fprintf(stderr, "Error: Usage: %s <filename>\n", argv[0]);
-        return EXIT_FAILURE;
-    }
-
-    if (access(argv[1], R_OK) == -1) {
-        fprintf(stderr, "Error: Can't open file %s\n", argv[1]);
-        return EXIT_FAILURE;
-    }
-
-    file = fopen(argv[1], "r");
-    bus.file = file;
-    if (file == NULL) {
-        fprintf(stderr, "Error: Can't open file %s\n", argv[1]);
-        return EXIT_FAILURE;
-    }
-
-    while ((read = getline(&line, &len, file)) != -1) {
-        bus.content = line;
-        int execute_result = execute(line, line_number, &stack, file);
-        if (execute_result != 0)
-        {
-            fclose(file);
-            free_stack(stack);
-            free(line);
-            exit(EXIT_FAILURE);
-        }
-        line_number++;
-    }
-
-    free(line);
-    fclose(file);
-
-    return (0);
+	if (argc != 2)
+	{
+		fprintf(stderr, "USAGE: monty file\n");
+		exit(EXIT_FAILURE);
+	}
+	file = fopen(argv[1], "r");
+	bus.file = file;
+	if (!file)
+	{
+		fprintf(stderr, "Error: Can't open file %s\n", argv[1]);
+		exit(EXIT_FAILURE);
+	}
+	while (read_line > 0)
+	{
+		content = NULL;
+		read_line = getline(&content, &size, file);
+		bus.content = content;
+		counter++;
+		if (read_line > 0)
+		{
+			execute(content, &stack, counter, file);
+		}
+		free(content);
+	}
+	free_stack(stack);
+	fclose(file);
+return (0);
 }
 
