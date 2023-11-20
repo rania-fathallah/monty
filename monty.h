@@ -76,4 +76,7 @@ char **string_end(char *ptrstrng, char *delimit);
 void tsk0_push_func(stack_t **stk, unsigned int line_number);
 
 
+void opcode_nop(stack_t **stk, unsigned int line_number);
+
+
 #endif
